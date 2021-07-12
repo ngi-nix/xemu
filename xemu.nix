@@ -3,6 +3,7 @@
 
 , SDL2
 , readline
+, lib
 }:
 let
   version = "master";
@@ -25,4 +26,12 @@ stdenv.mkDerivation {
   makeFlagsArray = [ "INSTALL_BINDIR=\${out}/bin" ];
 
   buildInputs = [ SDL2.dev readline.dev ];
+
+  meta = with lib; {
+    homepage = "https://github.com/lgblgblgb/xemu/";
+    description = "Emulations of some - mainly - 8 bit machines, including the Commodore LCD, Commodore 65, and the MEGA65 as well.";
+    license = licenses.gpl2Only;
+    platforms = platforms.unix;
+    maintainers = with maintainers; [ magic_rb ];
+  };
 }
