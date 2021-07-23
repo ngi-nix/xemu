@@ -9,15 +9,18 @@
       forAllSystems' = systems: fun: nixpkgs.lib.genAttrs systems fun;
       forAllSystems = forAllSystems' supportedSystems;
     in
+      with nixpkgs.lib;
       {
         overlays.xemu = final: prev:
           {
             xemu = final.callPackage ./xemu.nix {}; 
           };
 
-        hydraJobs = forAllSystems (system: {
-          build = self.defaultPackage.${system};
-        });
+        overlay = self.xemu.overlay;
+
+        packages = forAllSystems (system:
+          { xemu = self.defaultPackage.${system}; }
+        );
 
         defaultPackage = forAllSystems (system:
           let
@@ -25,5 +28,21 @@
           in
             pkgs.xemu
         );
+
+        devShell = forAllSystems (system:
+          let
+            pkgs = import nixpkgs { inherit system; overlays = mapAttrsToList (_: id) self.overlays; };
+          in
+            pkgs.mkShell {
+              buildInputs = with pkgs; [
+                readline
+                SDL2
+              ];
+            }
+        );
+
+        hydraJobs = forAllSystems (system: {
+          build = self.defaultPackage.${system};
+        });
       };
 }

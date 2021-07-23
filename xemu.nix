@@ -6,7 +6,7 @@
 , lib
 }:
 let
-  version = "master";
+  version = "c07caa063a0c070759863d41ecb6094271417ae2";
   pname = "xemu";
 in
 stdenv.mkDerivation {
@@ -19,10 +19,8 @@ stdenv.mkDerivation {
     sha256 = "sha256-IZT92W4/U+rcWDk4N8PrfHez/ndzpZBzQxriOveFnG4=";
   };
 
-  postUnpack = ''
-    sed -i 's/INSTALL_BINDIR[[:space:]]*=[[:space:]]*\/usr\/local\/bin/INSTALL_BINDIR := \/usr\/local\/bin/' source/build/Makefile.common
-  '';
-
+  patches = [ ./patches/0001-Make-INSTALL_BINDIR-configurable.patch ];
+  
   makeFlagsArray = [ "INSTALL_BINDIR=\${out}/bin" ];
 
   buildInputs = [ SDL2.dev readline.dev ];
@@ -33,5 +31,8 @@ stdenv.mkDerivation {
     license = licenses.gpl2Only;
     platforms = platforms.unix;
     maintainers = with maintainers; [ magic_rb ];
+    mainProgram = "xemu-xc65";
   };
+
+  enableParallelBuilding = true;
 }
