@@ -29,17 +29,7 @@
             pkgs.xemu
         );
 
-        devShell = forAllSystems (system:
-          let
-            pkgs = import nixpkgs { inherit system; overlays = mapAttrsToList (_: id) self.overlays; };
-          in
-            pkgs.mkShell {
-              buildInputs = with pkgs; [
-                readline
-                SDL2
-              ];
-            }
-        );
+        devShell = forAllSystems (system: self.packages.${system}.xemu);
 
         hydraJobs = forAllSystems (system: {
           build = self.defaultPackage.${system};
