@@ -29,6 +29,19 @@
             pkgs.xemu
         );
 
+        apps = mapAttrs (_: v:
+          mapAttrs (_: a:
+            {
+              type = "app";
+              program = a;
+            }
+          ) v
+        ) self.packages;
+
+        defaultApp = mapAttrs (_: v:
+          v.xemu
+        ) self.apps;
+
         devShell = forAllSystems (system: self.packages.${system}.xemu);
 
         hydraJobs = forAllSystems (system: {
